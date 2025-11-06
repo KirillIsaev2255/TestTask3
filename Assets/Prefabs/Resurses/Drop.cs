@@ -1,21 +1,33 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using System;
 
 public class Drop : MonoBehaviour
 {
     private Base Base;
     private bool IsPiked = false;
     [SerializeField] private string _base;
+    [SerializeField] private bool IsRed;
+    static public Func<GameObject,bool> spawnRed;
+    static public Func<GameObject,bool> spawnBlue;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Base = GameObject.FindGameObjectWithTag(_base).GetComponent<Base>();
-        IsPiked =  Base.SelectDrone(gameObject);
+        if(IsRed)
+            IsPiked =  (bool)(spawnRed?.Invoke(gameObject));
+        else
+            IsPiked = (bool)(spawnBlue?.Invoke(gameObject));
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!IsPiked) { IsPiked = Base.SelectDrone(gameObject); }
+        if (!IsPiked) 
+        {
+            if (IsRed)
+                IsPiked = (bool)(spawnRed?.Invoke(gameObject));
+            else
+                IsPiked = (bool)(spawnBlue?.Invoke(gameObject));
+        }
     }
 }
